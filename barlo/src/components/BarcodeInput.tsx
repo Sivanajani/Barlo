@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-
-type RohProdukt = {
-  [key: string]: any;
-};
+import { supabase } from "../lib/supabaseClient";
 
 type Produkt = {
   artikel: string;
@@ -18,7 +15,7 @@ export default function BarcodeInput() {
   const [barcodeTreffer, setBarcodeTreffer] = useState<Produkt[]>([]);
   const [artikelTreffer, setArtikelTreffer] = useState<Produkt[]>([]);
 
-  // ✅ Preis formatieren als CHF mit zwei Nachkommastellen
+  // Preis formatieren als CHF mit zwei Nachkommastellen
   const formatPreis = (preis: string) =>
     new Intl.NumberFormat("de-CH", {
       style: "currency",
@@ -26,18 +23,33 @@ export default function BarcodeInput() {
       minimumFractionDigits: 2,
     }).format(parseFloat(preis));
 
+  // Akzentzeichen entfernen (é => e, ô => o etc.)
+  const normalize = (text: string) =>
+    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  // Daten von Supabase laden
   useEffect(() => {
-    fetch("/produkte.json")
-      .then((res) => res.json())
-      .then((data: RohProdukt[]) => {
-        const umgewandelt: Produkt[] = data.map((p) => ({
-          artikel: p["Artikel"],
-          barcode: String(p["Barcode"]),
-          beschreibung: p["Beschreibung"],
-          preis: String(p["Warenwert \npro Stk. [CHF]"]),
+    const fetchProdukte = async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select('"Artikel", "Barcode", "Beschreibung", "Warenwert"');
+
+      if (error) {
+        console.error("Fehler beim Laden:", error.message);
+      } else if (data) {
+        const umgewandelt: Produkt[] = data.map((p: any) => ({
+          artikel: String(p["Artikel"] || ""),
+          barcode: String(p["Barcode"] || ""),
+          beschreibung: String(p["Beschreibung"] || ""),
+          preis: String(p["Warenwert"] ?? "0"),
         }));
+
+        console.log("Geladene Produkte:", umgewandelt);
         setProdukte(umgewandelt);
-      });
+      }
+    };
+
+    fetchProdukte();
   }, []);
 
   const handleBarcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +62,12 @@ export default function BarcodeInput() {
   const handleArtikelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value.trim().toLowerCase();
     setArtikelInput(e.target.value);
+
+    const normalizedInput = normalize(input);
     const treffer = produkte.filter((p) =>
-      p.artikel.toLowerCase().includes(input)
+      normalize(p.artikel.toLowerCase()).includes(normalizedInput)
     );
+
     setArtikelTreffer(treffer);
   };
 
@@ -74,6 +89,8 @@ export default function BarcodeInput() {
             {barcodeTreffer.map((p, i) => (
               <li key={i} className="product-item">
                 <strong>{p.artikel}</strong>
+                <br />
+                {p.beschreibung && <span>{p.beschreibung}<br /></span>}
                 Preis: {formatPreis(p.preis)}
               </li>
             ))}
@@ -96,6 +113,8 @@ export default function BarcodeInput() {
             {artikelTreffer.map((p, i) => (
               <li key={i} className="product-item">
                 <strong>{p.artikel}</strong>
+                <br />
+                {p.beschreibung && <span>{p.beschreibung}<br /></span>}
                 Preis: {formatPreis(p.preis)}
               </li>
             ))}
