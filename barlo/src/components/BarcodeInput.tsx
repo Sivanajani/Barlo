@@ -53,8 +53,8 @@ export default function BarcodeInput() {
     <h2>Barlo – Barcode & Produktsuche</h2>
 
     {/* Barcode-Suche */}
-    <div style={{ marginBottom: "1rem" }}>
-      <label><strong>🔢 Barcode suchen:</strong></label>
+    <div className="search-section">
+      <label>🔢 Barcode suchen:</label>
       <input
         type="text"
         value={barcodeInput}
@@ -62,10 +62,11 @@ export default function BarcodeInput() {
         placeholder="z. B. 5449000131836"
       />
       {barcodeInput && barcodeTreffer.length > 0 && (
-        <ul>
+        <ul className="product-list">
           {barcodeTreffer.map((p, i) => (
-            <li key={i}>
-              <strong>{p.artikel}</strong> – CHF {p.preis}
+            <li key={i} className="product-item">
+              <strong>{p.artikel}</strong>
+              Preis: CHF {p.preis}
             </li>
           ))}
         </ul>
@@ -74,8 +75,8 @@ export default function BarcodeInput() {
     </div>
 
     {/* Artikelsuche */}
-    <div>
-      <label><strong>📝 Artikelname suchen:</strong></label>
+    <div className="search-section">
+      <label>📝 Artikelname suchen:</label>
       <input
         type="text"
         value={artikelInput}
@@ -83,10 +84,11 @@ export default function BarcodeInput() {
         placeholder="z. B. Cola, Fanta, Mango…"
       />
       {artikelInput && artikelTreffer.length > 0 && (
-        <ul>
+        <ul className="product-list">
           {artikelTreffer.map((p, i) => (
-            <li key={i}>
-              <strong>{p.artikel}</strong> – CHF {p.preis}
+            <li key={i} className="product-item">
+              <strong>{p.artikel}</strong>
+              Preis: CHF {p.preis}
             </li>
           ))}
         </ul>
@@ -95,4 +97,5 @@ export default function BarcodeInput() {
     </div>
   </div>
 );
+
 }

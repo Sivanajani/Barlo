@@ -40,3 +40,71 @@
 .read-the-docs {
   color: #888;
 }
+/* Barlo – Suchbereich */
+
+.search-section {
+  margin: 2rem 0;
+  text-align: left;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+.search-section label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.search-section input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+}
+
+/* Trefferliste */
+
+.product-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.product-item {
+  background: #ffffff;
+  color: #222;
+  border: 1px solid #ddd;
+  border-left: 6px solid #646cff;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  text-align: left;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+
+.product-item strong {
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+@media (prefers-color-scheme: dark) {
+  .product-item {
+    background: #333;
+    color: #fff;
+    border-left-color: #61dafb;
+  }
+
+  .search-section input[type="text"] {
+    background: #1e1e1e;
+    color: #fff;
+    border-color: #444;
+  }
+
+  body {
+    background-color: #242424;
+  }
+}
