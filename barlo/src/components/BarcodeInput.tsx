@@ -18,6 +18,14 @@ export default function BarcodeInput() {
   const [barcodeTreffer, setBarcodeTreffer] = useState<Produkt[]>([]);
   const [artikelTreffer, setArtikelTreffer] = useState<Produkt[]>([]);
 
+  // ✅ Preis formatieren als CHF mit zwei Nachkommastellen
+  const formatPreis = (preis: string) =>
+    new Intl.NumberFormat("de-CH", {
+      style: "currency",
+      currency: "CHF",
+      minimumFractionDigits: 2,
+    }).format(parseFloat(preis));
+
   useEffect(() => {
     fetch("/produkte.json")
       .then((res) => res.json())
@@ -49,53 +57,52 @@ export default function BarcodeInput() {
   };
 
   return (
-  <div>
-    <h2>Barlo – Barcode & Produktsuche</h2>
+    <div>
+      <h2>Barlo – Barcode & Produktsuche</h2>
 
-    {/* Barcode-Suche */}
-    <div className="search-section">
-      <label>🔢 Barcode suchen:</label>
-      <input
-        type="text"
-        value={barcodeInput}
-        onChange={handleBarcodeChange}
-        placeholder="z. B. 5449000131836"
-      />
-      {barcodeInput && barcodeTreffer.length > 0 && (
-        <ul className="product-list">
-          {barcodeTreffer.map((p, i) => (
-            <li key={i} className="product-item">
-              <strong>{p.artikel}</strong>
-              Preis: CHF {p.preis}
-            </li>
-          ))}
-        </ul>
-      )}
-      {barcodeInput && barcodeTreffer.length === 0 && <p>Kein Produkt gefunden</p>}
+      {/* Barcode-Suche */}
+      <div className="search-section">
+        <label>🔢 Barcode suchen:</label>
+        <input
+          type="text"
+          value={barcodeInput}
+          onChange={handleBarcodeChange}
+          placeholder="z. B. 5449000131836"
+        />
+        {barcodeInput && barcodeTreffer.length > 0 && (
+          <ul className="product-list">
+            {barcodeTreffer.map((p, i) => (
+              <li key={i} className="product-item">
+                <strong>{p.artikel}</strong>
+                Preis: {formatPreis(p.preis)}
+              </li>
+            ))}
+          </ul>
+        )}
+        {barcodeInput && barcodeTreffer.length === 0 && <p>Kein Produkt gefunden</p>}
+      </div>
+
+      {/* Artikelsuche */}
+      <div className="search-section">
+        <label>📝 Artikelname suchen:</label>
+        <input
+          type="text"
+          value={artikelInput}
+          onChange={handleArtikelChange}
+          placeholder="z. B. Cola, Fanta, Mango…"
+        />
+        {artikelInput && artikelTreffer.length > 0 && (
+          <ul className="product-list">
+            {artikelTreffer.map((p, i) => (
+              <li key={i} className="product-item">
+                <strong>{p.artikel}</strong>
+                Preis: {formatPreis(p.preis)}
+              </li>
+            ))}
+          </ul>
+        )}
+        {artikelInput && artikelTreffer.length === 0 && <p>Kein Produkt gefunden</p>}
+      </div>
     </div>
-
-    {/* Artikelsuche */}
-    <div className="search-section">
-      <label>📝 Artikelname suchen:</label>
-      <input
-        type="text"
-        value={artikelInput}
-        onChange={handleArtikelChange}
-        placeholder="z. B. Cola, Fanta, Mango…"
-      />
-      {artikelInput && artikelTreffer.length > 0 && (
-        <ul className="product-list">
-          {artikelTreffer.map((p, i) => (
-            <li key={i} className="product-item">
-              <strong>{p.artikel}</strong>
-              Preis: CHF {p.preis}
-            </li>
-          ))}
-        </ul>
-      )}
-      {artikelInput && artikelTreffer.length === 0 && <p>Kein Produkt gefunden</p>}
-    </div>
-  </div>
-);
-
+  );
 }
