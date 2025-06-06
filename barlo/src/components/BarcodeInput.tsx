@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
-// MUI Icons
 import BarcodeIcon from "@mui/icons-material/QrCodeScanner";
 import TextFieldsIcon from "@mui/icons-material/TextFields";
 import EditIcon from "@mui/icons-material/Edit";
@@ -9,6 +8,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 
 type Produkt = {
   artikel: string;
@@ -58,10 +58,28 @@ export default function BarcodeInput() {
     fetchProdukte();
   }, []);
 
+  // Barcode aus URL suchen
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const scannedBarcode = params.get("barcode");
+
+    if (scannedBarcode && produkte.length > 0) {
+      const clean = scannedBarcode.trim().toLowerCase();
+      setBarcodeInput(scannedBarcode);
+      const treffer = produkte.filter(
+        (p) => p.barcode.trim().toLowerCase() === clean
+      );
+      setBarcodeTreffer(treffer);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [produkte]);
+
   const handleBarcodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value.trim();
     setBarcodeInput(input);
-    const treffer = produkte.filter((p) => p.barcode === input);
+    const treffer = produkte.filter(
+      (p) => p.barcode.trim().toLowerCase() === input.toLowerCase()
+    );
     setBarcodeTreffer(treffer);
   };
 
@@ -77,7 +95,8 @@ export default function BarcodeInput() {
 
   const handleEdit = (index: number, quelle: "artikel" | "barcode") => {
     setEditIndex(index);
-    const produkt = quelle === "artikel" ? artikelTreffer[index] : barcodeTreffer[index];
+    const produkt =
+      quelle === "artikel" ? artikelTreffer[index] : barcodeTreffer[index];
     setEditedProdukt(produkt);
   };
 
@@ -86,7 +105,8 @@ export default function BarcodeInput() {
   };
 
   const handleSave = async (index: number, quelle: "artikel" | "barcode") => {
-    const produkt = quelle === "artikel" ? artikelTreffer[index] : barcodeTreffer[index];
+    const produkt =
+      quelle === "artikel" ? artikelTreffer[index] : barcodeTreffer[index];
     const updateData = {
       Artikel: editedProdukt.artikel,
       Barcode: editedProdukt.barcode,
@@ -175,7 +195,6 @@ export default function BarcodeInput() {
     <div>
       <h2>Barlo – Barcode & Produktsuche</h2>
 
-      {/* Barcode-Suche */}
       <div className="search-section">
         <label>
           <BarcodeIcon style={{ verticalAlign: "middle", marginRight: "0.3rem" }} />
@@ -187,6 +206,22 @@ export default function BarcodeInput() {
           onChange={handleBarcodeChange}
           placeholder="z. B. 5449000131836"
         />
+        <Button
+          variant="outlined"
+          onClick={() => {
+            const redirectUrl = encodeURIComponent(window.location.href);
+            const popup = window.open(
+              `https://sivanajani.github.io/barcode/?redirect=${redirectUrl}`,
+              "BarcodeScanner",
+              "width=600,height=500"
+            );
+            if (popup) popup.focus();
+          }}
+          style={{ marginTop: "1rem" }}
+        >
+          Barcode scannen
+        </Button>
+
         {barcodeInput && barcodeTreffer.length > 0 && (
           <ul className="product-list">
             {barcodeTreffer.map((p, i) => (
@@ -199,7 +234,6 @@ export default function BarcodeInput() {
         {barcodeInput && barcodeTreffer.length === 0 && <p>Kein Produkt gefunden</p>}
       </div>
 
-      {/* Artikelsuche */}
       <div className="search-section">
         <label>
           <TextFieldsIcon style={{ verticalAlign: "middle", marginRight: "0.3rem" }} />

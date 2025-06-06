@@ -15,11 +15,15 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@ericblade/quagga2": "^1.8.4",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
     "@supabase/supabase-js": "^2.49.10",
+    "@zxing/browser": "^0.1.5",
     "gh-pages": "^6.3.0",
+    "html5-qrcode": "^2.3.8",
     "postgres": "^3.4.7",
+    "quagga": "^0.12.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
